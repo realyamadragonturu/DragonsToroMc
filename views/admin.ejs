@@ -1,0 +1,81 @@
+<% layout('layout') %>
+
+<div class="header">
+    <img src="/logo.png" class="logo" alt="Logo">
+    <span class="site-title">Dragons Toro MC - Admin</span>
+    <a href="/" class="admin-btn">Về trang chủ</a>
+</div>
+
+<% if (!isAdmin) { %>
+<!-- Form đăng nhập -->
+<div class="admin-form">
+    <h2>🔐 Đăng nhập Admin</h2>
+    <% if (locals.error && error) { %>
+        <div class="error-msg"><%= error %></div>
+    <% } %>
+    <form action="/admin/login" method="POST">
+        <input type="text" name="username" placeholder="Tài khoản" required>
+        <input type="password" name="password" placeholder="Mật khẩu" required>
+        <button type="submit">Đăng nhập</button>
+    </form>
+</div>
+<% } else { %>
+<!-- Form đăng mod với 2 chế độ -->
+<div class="admin-form">
+    <h2>➕ Đăng Mod Mới</h2>
+    <% if (locals.success && success) { %>
+        <div class="success-msg"><%= success %></div>
+    <% } %>
+    <% if (locals.error && error) { %>
+        <div class="error-msg"><%= error %></div>
+    <% } %>
+    
+    <!-- Tab chọn chế độ -->
+    <div class="tab-buttons">
+        <button type="button" class="tab-btn active" onclick="showTab('link')">🔗 Link tải</button>
+        <button type="button" class="tab-btn" onclick="showTab('file')">📁 Upload file</button>
+    </div>
+    
+    <!-- Form dùng link -->
+    <form id="form_link" action="/admin/add-mod" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="download_type" value="link">
+        <input type="text" name="mod_name" placeholder="Tên mod" required>
+        <textarea name="mod_description" placeholder="Mô tả mod" rows="4" required></textarea>
+        <input type="file" name="mod_image" accept="image/*" required>
+        <input type="url" name="download_link" placeholder="Nhập link tải (Mediafire, Google Drive...)" required>
+        <button type="submit">Đăng Mod</button>
+    </form>
+    
+    <!-- Form upload file -->
+    <form id="form_file" action="/admin/add-mod-with-file" method="POST" enctype="multipart/form-data" style="display:none;">
+        <input type="text" name="mod_name" placeholder="Tên mod" required>
+        <textarea name="mod_description" placeholder="Mô tả mod" rows="4" required></textarea>
+        <input type="file" name="mod_image" accept="image/*" required>
+        <input type="file" name="download_file" accept=".jar,.zip,.rar" required>
+        <small>Hỗ trợ file .jar, .zip, .rar</small>
+        <button type="submit">Đăng Mod</button>
+    </form>
+    
+    <a href="/logout" class="logout-link">Đăng xuất</a>
+</div>
+
+<script>
+function showTab(type) {
+    const linkForm = document.getElementById('form_link');
+    const fileForm = document.getElementById('form_file');
+    const btns = document.querySelectorAll('.tab-btn');
+    
+    if (type === 'link') {
+        linkForm.style.display = 'block';
+        fileForm.style.display = 'none';
+        btns[0].classList.add('active');
+        btns[1].classList.remove('active');
+    } else {
+        linkForm.style.display = 'none';
+        fileForm.style.display = 'block';
+        btns[0].classList.remove('active');
+        btns[1].classList.add('active');
+    }
+}
+</script>
+<% } %>
